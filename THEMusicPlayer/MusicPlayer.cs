@@ -16,7 +16,7 @@ namespace THEMusicPlayer
     {
         private MediaElement mediaElement_;
         private SystemMediaTransportControls mediaControls_;
-        private List<string> nowPlayingList = new List<string>();
+        private List<string> nowPlayingList_ = new List<string>();
         private int currentTrackIndex_;
         private CoreDispatcher dispatcher_;
 
@@ -82,7 +82,7 @@ namespace THEMusicPlayer
         private void mediaElement__MediaEnded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             currentTrackIndex_++;
-            if (currentTrackIndex_ < nowPlayingList.Count)
+            if (currentTrackIndex_ < nowPlayingList_.Count)
             {
                 UpdateMediaSource();
                 PlayMedia();
@@ -91,7 +91,7 @@ namespace THEMusicPlayer
 
         private async void UpdateMediaSource()
         {
-            var file = await Windows.Storage.StorageFile.GetFileFromPathAsync(nowPlayingList[currentTrackIndex_]);
+            var file = await Windows.Storage.StorageFile.GetFileFromPathAsync(nowPlayingList_[currentTrackIndex_]);
             var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
             mediaElement_.SetSource(stream, "audio/x-mpeg-3");
         }
@@ -122,8 +122,8 @@ namespace THEMusicPlayer
 
         public void EnqueueTrack(string filePath)
         {
-            nowPlayingList.Add(filePath);
-            if (nowPlayingList.Count == 1)
+            nowPlayingList_.Add(filePath);
+            if (nowPlayingList_.Count == 1)
             {
                 currentTrackIndex_ = 0;
                 UpdateMediaSource();
@@ -139,17 +139,17 @@ namespace THEMusicPlayer
             if (index == currentTrackIndex_)
             {
                 StopMedia();
-                nowPlayingList.RemoveAt(index);
+                nowPlayingList_.RemoveAt(index);
                 UpdateMediaSource();
             }
             else if (index < currentTrackIndex_)
             {
-                nowPlayingList.RemoveAt(index);
+                nowPlayingList_.RemoveAt(index);
                 currentTrackIndex_--;
             }
             else if (index > currentTrackIndex_)
             {
-                nowPlayingList.RemoveAt(index);
+                nowPlayingList_.RemoveAt(index);
             }
         }
     }
