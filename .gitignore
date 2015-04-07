@@ -1,0 +1,6 @@
+THEMusicPlayer/bin/
+THEMusicPlayer/obj/
+UnitTests/bin/
+UnitTests/obj/
+*.db
+*.suo
