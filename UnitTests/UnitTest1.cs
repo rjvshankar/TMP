@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework.AppContainer;
+using Windows.UI.Core;
 using THEMusicPlayer;
 
 namespace UnitTests
@@ -22,8 +23,9 @@ namespace UnitTests
 		{
 			const string testfile = @"C:\Users\jysan_000\Music\[2014] The Black Market\04 - The Black Market.mp3";
 			var mediaElement = new Windows.UI.Xaml.Controls.MediaElement();
-			var musicPlayer = new THEMusicPlayer.MusicPlayer(mediaElement);
-			musicPlayer.EnqueueTrack(new Uri(testfile));
+			var dispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
+			var musicPlayer = new THEMusicPlayer.MusicPlayer(mediaElement, dispatcher);
+			musicPlayer.EnqueueTrack(testfile);
 			musicPlayer.PlayMedia();
 			Task.Delay(TimeSpan.FromSeconds(5)).Wait();
 			musicPlayer.PauseMedia();

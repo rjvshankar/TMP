@@ -16,12 +16,13 @@ namespace THEMusicPlayer
 	{
 		private MediaElement mediaElement_;
 		private SystemMediaTransportControls mediaControls_;
-		private List<Uri> nowPlayingList = new List<Uri>();
-		private int currentTrackIndex;
-		private MediaElement mediaElement;
+		private List<string> nowPlayingList = new List<string>();
+		private int currentTrackIndex_;
+		private CoreDispatcher dispatcher_;
 
-		public MusicPlayer(MediaElement medElement)
+		public MusicPlayer(MediaElement medElement, CoreDispatcher disp)
 		{
+			this.dispatcher_ = disp;
 			this.mediaElement_ = medElement;
 			//This should be set in XAML, but just to be sure...
 			mediaElement_.AudioCategory = AudioCategory.BackgroundCapableMedia;
@@ -80,22 +81,24 @@ namespace THEMusicPlayer
 
 		private void mediaElement__MediaEnded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
 		{
-			currentTrackIndex++;
-			if (currentTrackIndex < nowPlayingList.Count)
+			currentTrackIndex_++;
+			if (currentTrackIndex_ < nowPlayingList.Count)
 			{
 				UpdateMediaSource();
 				PlayMedia();
 			}
 		}
 
-		private void UpdateMediaSource()
+		private async void UpdateMediaSource()
 		{
-			mediaElement_.Source = nowPlayingList[currentTrackIndex];
+			var file = await Windows.Storage.StorageFile.GetFileFromPathAsync(nowPlayingList[currentTrackIndex_]);
+			var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
+			mediaElement_.SetSource(stream, "audio/x-mpeg-3");
 		}
 
 		public async void PlayMedia()
 		{
-			await CoreWindow.GetForCurrentThread().Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+			await dispatcher_.RunAsync(CoreDispatcherPriority.Normal, () =>
 				{
 					mediaElement_.Play();
 				});
@@ -103,48 +106,48 @@ namespace THEMusicPlayer
 
 		public async void PauseMedia()
 		{
-			await CoreWindow.GetForCurrentThread().Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+			await dispatcher_.RunAsync(CoreDispatcherPriority.Normal, () =>
 				{
-					mediaElement_.Play();
+					mediaElement_.Pause();
 				});
 		}
 
 		public async void StopMedia()
 		{
-			await CoreWindow.GetForCurrentThread().Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+			await dispatcher_.RunAsync(CoreDispatcherPriority.Normal, () =>
 				{
 					mediaElement_.Stop();
 				});
 		}
 
-		public void EnqueueTrack(Uri uri)
+		public void EnqueueTrack(string filePath)
 		{
-			nowPlayingList.Add(uri);
+			nowPlayingList.Add(filePath);
 			if (nowPlayingList.Count == 1)
 			{
-				currentTrackIndex = 0;
+				currentTrackIndex_ = 0;
 				UpdateMediaSource();
 			}
 			else
 			{
-				currentTrackIndex++;
+				currentTrackIndex_++;
 			}
 		}
 
 		public void RemoveTrackAtIndex(int index)
 		{
-			if (index == currentTrackIndex)
+			if (index == currentTrackIndex_)
 			{
 				StopMedia();
 				nowPlayingList.RemoveAt(index);
 				UpdateMediaSource();
 			}
-			else if (index < currentTrackIndex)
+			else if (index < currentTrackIndex_)
 			{
 				nowPlayingList.RemoveAt(index);
-				currentTrackIndex--;
+				currentTrackIndex_--;
 			}
-			else if (index > currentTrackIndex)
+			else if (index > currentTrackIndex_)
 			{
 				nowPlayingList.RemoveAt(index);
 			}
