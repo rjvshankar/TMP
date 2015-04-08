@@ -24,7 +24,7 @@ namespace THEMusicPlayer
          * or run Refresh() if it doesn't exist.
          */
 
-        public async void getSongList()
+        public async void retreiveSongList()
         {
             /*
              * Call this in the constructor. And change the name please.
@@ -52,6 +52,8 @@ namespace THEMusicPlayer
                 jsonObject["Path"] = JsonValue.CreateStringValue(songInfo.getPath());
                 jsonObject["Title"] = JsonValue.CreateStringValue(songInfo.getTitle());
                 jsonObject["Album"] = JsonValue.CreateStringValue(songInfo.getAlbum());
+
+                JsonArray allTheArtists = new JsonArray();
 
                 /*
                  * Populate a JSON array with the contents of your song's Artists

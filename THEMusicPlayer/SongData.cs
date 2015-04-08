@@ -15,23 +15,11 @@ namespace THEMusicPlayer
         public String path;
         public String title;
         public String album;
-        public String artist;
+        public String[] artist;
         public uint trackNo;
 
-        public SongData()
-        {
-            /*
-             * You can get rid of this constructor. All these are default values.
-             */ 
-
-            path = null;
-            title = null;
-            album = null;
-            artist = null;
-            trackNo = 0;
-        }
-
-        public SongData(String Path, String Title, String Album, String Artist, uint track)
+        
+        public SongData(String Path, String Title, String Album, String[] Artist, uint track)
         {
             path = Path;
             title = Title;
@@ -60,7 +48,7 @@ namespace THEMusicPlayer
             return album;
         }
 
-        public String getArtist()
+        public String[] getArtists()
         {
             return artist;
         }
