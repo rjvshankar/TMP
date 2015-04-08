@@ -54,12 +54,13 @@ namespace THEMusicPlayer
                 jsonObject["Album"] = JsonValue.CreateStringValue(songInfo.getAlbum());
 
                 JsonArray allTheArtists = new JsonArray();
+                allTheArtists = 
 
                 /*
                  * Populate a JSON array with the contents of your song's Artists
                  * array. Assign it to jsonObject["Artist"].
                  */
-                jsonObject["Artist"] = JsonValue.CreateStringValue(songInfo.getArtist());
+                jsonObject["Artist"] = JsonValue.CreateStringValue(songInfo.getArtists());
                 jsonObject["trackNo"] = JsonValue.CreateNumberValue(songInfo.getTrackNo());
 
                 /*
