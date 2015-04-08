@@ -14,7 +14,7 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <MediaElement x:Name="mediaElement" Grid.Row="3" Width="200" Height="200" AudioCategory="BackgroundCapableMedia"/>
+        <MediaElement x:Name="mediaElement" Grid.Row="3" Width="200" Height="200" AudioCategory="BackgroundCapableMedia" AreTransportControlsEnabled="True"/>
         <Button Content="Begin test!" Grid.Row="2" Click="Button_Click"/>
     </Grid>
 </Page>

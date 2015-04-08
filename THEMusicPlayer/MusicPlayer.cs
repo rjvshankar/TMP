@@ -94,6 +94,8 @@ namespace THEMusicPlayer
             var file = await Windows.Storage.StorageFile.GetFileFromPathAsync(nowPlayingList_[currentTrackIndex_]);
             var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
             mediaElement_.SetSource(stream, "audio/x-mpeg-3");
+            await mediaControls_.DisplayUpdater.CopyFromFileAsync(MediaPlaybackType.Music, file);
+            mediaControls_.DisplayUpdater.Update();
         }
 
         public async void PlayMedia()
