@@ -4,3 +4,4 @@ UnitTests/bin/
 UnitTests/obj/
 *.db
 *.suo
+*.pdb
