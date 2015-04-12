@@ -18,7 +18,7 @@ namespace THEMusicPlayer
             StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
             StorageFile songsFile = await localFolder.GetFileAsync("songs.json");
 
-
+            songsFile.
         }
 
         public async void Save()
