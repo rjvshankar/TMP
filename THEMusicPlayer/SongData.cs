@@ -8,6 +8,10 @@ namespace THEMusicPlayer
 {
     public class SongData
     {
+        /*
+         * You need an array of strings to represent your artists.
+         */
+
         public String path;
         public String title;
         public String album;
@@ -16,6 +20,10 @@ namespace THEMusicPlayer
 
         public SongData()
         {
+            /*
+             * You can get rid of this constructor. All these are default values.
+             */ 
+
             path = null;
             title = null;
             album = null;
@@ -31,6 +39,11 @@ namespace THEMusicPlayer
             artist = Artist;
             trackNo = track;
         }
+
+        /*
+         * Please get rid of these horrible Java-style getters and replace them with
+         * read-only properties.
+         */
 
         public String getPath()
         {

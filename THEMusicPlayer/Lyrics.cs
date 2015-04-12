@@ -41,14 +41,9 @@ namespace THEMusicPlayer
                 return "Error retrieving lyrics.";
             }
             
-            //Remove the first line of this crappy XML
-            //string[] lines = xmlResponse.Split(Environment.NewLine.ToCharArray()).Skip(1).ToArray();
-            //xmlResponse = string.Join(Environment.NewLine, lines);
-
             string url;
             var settings = new XmlReaderSettings();
             settings.Async = true;
-            //settings.ConformanceLevel = ConformanceLevel.Fragment;
             using (XmlReader reader = XmlReader.Create(new StringReader(xmlResponse), settings))
             {
                 reader.ReadToFollowing("lyrics");
