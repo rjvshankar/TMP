@@ -12,6 +12,7 @@ namespace THEMusicPlayer
         public String title;
         public String album;
         public String artist;
+        public uint trackNo;
 
         public SongData()
         {
@@ -19,14 +20,16 @@ namespace THEMusicPlayer
             title = null;
             album = null;
             artist = null;
+            trackNo = 0;
         }
 
-        public SongData(String a, String b, String c, String d)
+        public SongData(String Path, String Title, String Album, String Artist, uint track)
         {
-            path = a;
-            title = b;
-            album = c;
-            artist = d;
+            path = Path;
+            title = Title;
+            album = Album;
+            artist = Artist;
+            trackNo = track;
         }
 
     }

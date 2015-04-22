@@ -11,18 +11,55 @@ namespace THEMusicPlayer
     {
         private List<SongData> songList_ = new List<SongData>();
 
-        public static void GetSongList()
+        public void getSongList()
+        {
+        
+        }
+
+        public void Save()
         {
             
         }
 
-        public static void Save()
+        public void Refresh()
         {
-
+            StorageFolder rootDirectory = KnownFolders.MusicLibrary;
+            processFolder(rootDirectory);
         }
 
-        public static void Refresh()
+        //recursive function that gets all files in the folder
+        private async void processFolder(StorageFolder folder)
         {
+            var items = await folder.GetItemsAsync();
+
+            foreach (var item in items)
+            {
+                if (item is StorageFolder)
+                {
+                    var subFolder = item as StorageFolder;
+                    processFolder(subFolder);
+                }
+
+                else
+                {
+                    var songFile = item as StorageFile;
+
+                    TagLib.File file = TagLib.File.Create(songFile.Path);
+                    
+                    var Artists = file.Tag.AlbumArtists;
+                    StringBuilder builder = new StringBuilder();
+                    
+                    foreach (var artist in Artists)
+                    {
+                        builder.Append(artist);
+                        builder.Append(", ");
+                    }
+
+                    String Artist = builder.ToString();
+
+                    songList_.Add(new SongData(songFile.Path, file.Tag.Title, Artist, file.Tag.Album, file.Tag.Track));
+                }
+            }
 
         }
 
