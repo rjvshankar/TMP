@@ -32,5 +32,29 @@ namespace THEMusicPlayer
             trackNo = track;
         }
 
+        public String getPath()
+        {
+            return path;
+        }
+
+        public String getTitle()
+        {
+            return title;
+        }
+
+        public String getAlbum()
+        {
+            return album;
+        }
+
+        public String getArtist()
+        {
+            return artist;
+        }
+
+        public uint getTrackNo()
+        {
+            return trackNo;
+        }
     }
 }

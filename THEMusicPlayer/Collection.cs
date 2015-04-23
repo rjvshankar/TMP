@@ -7,6 +7,7 @@ using Windows.Storage;
 
 namespace THEMusicPlayer
 {
+
     public class Collection
     {
         private List<SongData> songList_ = new List<SongData>();
@@ -16,9 +17,12 @@ namespace THEMusicPlayer
         
         }
 
-        public void Save()
+        public async void Save()
         {
-            
+            StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            StorageFile sampleFile = await localFolder.CreateFileAsync("songs.json", CreationCollisionOption.OpenIfExists);
+
+
         }
 
         public void Refresh()
@@ -43,9 +47,7 @@ namespace THEMusicPlayer
                 else
                 {
                     var songFile = item as StorageFile;
-
                     TagLib.File file = TagLib.File.Create(songFile.Path);
-                    
                     var Artists = file.Tag.AlbumArtists;
                     StringBuilder builder = new StringBuilder();
                     
