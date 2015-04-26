@@ -23,6 +23,8 @@ namespace THEMusicPlayer
             StorageFile sampleFile = await localFolder.CreateFileAsync("songs.json", CreationCollisionOption.OpenIfExists);
 
 
+
+
         }
 
         public void Refresh()
