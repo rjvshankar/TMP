@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
+using Windows.Data.Json;
 
 namespace THEMusicPlayer
 {
@@ -22,8 +23,18 @@ namespace THEMusicPlayer
             StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
             StorageFile sampleFile = await localFolder.CreateFileAsync("songs.json", CreationCollisionOption.OpenIfExists);
 
+            foreach (SongData songInfo in songList_)
+            {
+                JsonObject jsonObject = new JsonObject();
+                jsonObject["Path"] = JsonValue.CreateStringValue(songInfo.getPath());
+                jsonObject["Title"] = JsonValue.CreateStringValue(songInfo.getTitle());
+                jsonObject["Album"] = JsonValue.CreateStringValue(songInfo.getAlbum());
+                jsonObject["Artist"] = JsonValue.CreateStringValue(songInfo.getArtist());
+                jsonObject["trackNo"] = JsonValue.CreateNumberValue(songInfo.getTrackNo());
+                string jsonString = jsonObject.Stringify();
 
-
+                
+            }
 
         }
 
@@ -42,12 +53,14 @@ namespace THEMusicPlayer
             {
                 if (item is StorageFolder)
                 {
+                    //recursive call to process sub-folders
                     var subFolder = item as StorageFolder;
                     processFolder(subFolder);
                 }
 
                 else
                 {
+                    //get song details
                     var songFile = item as StorageFile;
                     TagLib.File file = TagLib.File.Create(songFile.Path);
                     var Artists = file.Tag.AlbumArtists;
