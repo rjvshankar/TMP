@@ -13,27 +13,33 @@ namespace THEMusicPlayer
     {
         private List<SongData> songList_ = new List<SongData>();
 
-        public void getSongList()
+        public async void getSongList()
         {
-        
+            StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            StorageFile songsFile = await localFolder.GetFileAsync("songs.json");
+
+
         }
 
         public async void Save()
         {
             StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
-            StorageFile sampleFile = await localFolder.CreateFileAsync("songs.json", CreationCollisionOption.OpenIfExists);
+            StorageFile songsFile = await localFolder.CreateFileAsync("songs.json", CreationCollisionOption.OpenIfExists);
 
             foreach (SongData songInfo in songList_)
             {
+                //Populating jsonObject with songInfo from songList_
                 JsonObject jsonObject = new JsonObject();
                 jsonObject["Path"] = JsonValue.CreateStringValue(songInfo.getPath());
                 jsonObject["Title"] = JsonValue.CreateStringValue(songInfo.getTitle());
                 jsonObject["Album"] = JsonValue.CreateStringValue(songInfo.getAlbum());
                 jsonObject["Artist"] = JsonValue.CreateStringValue(songInfo.getArtist());
                 jsonObject["trackNo"] = JsonValue.CreateNumberValue(songInfo.getTrackNo());
-                string jsonString = jsonObject.Stringify();
+                String jsonString = jsonObject.Stringify();
+                String.Concat(jsonString, "\n");
 
-                
+                //Writing to songs.json
+                await Windows.Storage.FileIO.WriteTextAsync(songsFile, jsonString);
             }
 
         }
