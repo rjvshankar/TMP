@@ -15,6 +15,7 @@ namespace THEMusicPlayer
 
         public async void getSongList()
         {
+
             StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
             StorageFile songsFile = await localFolder.GetFileAsync("songs.json");
 
@@ -40,6 +41,7 @@ namespace THEMusicPlayer
 
                 //Writing to songs.json
                 await Windows.Storage.FileIO.WriteTextAsync(songsFile, jsonString);
+
             }
 
         }
@@ -71,7 +73,7 @@ namespace THEMusicPlayer
                     TagLib.File file = TagLib.File.Create(songFile.Path);
                     var Artists = file.Tag.AlbumArtists;
                     StringBuilder builder = new StringBuilder();
-                    
+
                     foreach (var artist in Artists)
                     {
                         builder.Append(artist);
