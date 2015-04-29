@@ -9,12 +9,18 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition  Height="7*"/>
+            <RowDefinition  Height="1*"/>
         </Grid.RowDefinitions>
-        <MediaElement x:Name="mediaElement" Grid.Row="3" Width="200" Height="200" AudioCategory="BackgroundCapableMedia" AreTransportControlsEnabled="True"/>
-        <Button Content="Begin test!" Grid.Row="2" Click="Button_Click"/>
+        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="lyricsTextBlock" Grid.Column="0" />
+            <StackPanel x:Name="collectionStackPanel" Grid.Column="1" />
+        </Grid>
+        
+        <MediaElement AudioCategory="BackgroundCapableMedia" Grid.Row="1" x:Name="mediaElement" />
     </Grid>
 </Page>
