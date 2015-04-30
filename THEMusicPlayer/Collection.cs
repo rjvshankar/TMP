@@ -23,6 +23,10 @@ namespace THEMusicPlayer
          * In the constructor you should populate songList_ from songs.json,
          * or run Refresh() if it doesn't exist.
          */
+        public Collection()
+        {
+
+        }
 
         public async void retreiveSongList()
         {
@@ -32,7 +36,7 @@ namespace THEMusicPlayer
             StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
             StorageFile songsFile = await localFolder.GetFileAsync("songs.json");
 
-            songsFile.
+            var allTheSongs = await Windows.Storage.FileIO.ReadTextAsync(songsFile);
         }
 
         public async void Save()
@@ -40,6 +44,7 @@ namespace THEMusicPlayer
             StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
             StorageFile songsFile = await localFolder.CreateFileAsync("songs.json", CreationCollisionOption.OpenIfExists);
 
+            JsonArray allTheSongs = new JsonArray();
             /*
              * Add all the objects to a JSON array and write it out to the file.
              * Look up the JsonArray class and add objects to it using its Add method.
@@ -52,38 +57,14 @@ namespace THEMusicPlayer
                 jsonObject["Path"] = JsonValue.CreateStringValue(songInfo.getPath());
                 jsonObject["Title"] = JsonValue.CreateStringValue(songInfo.getTitle());
                 jsonObject["Album"] = JsonValue.CreateStringValue(songInfo.getAlbum());
-                /*
-                 * Populate a JSON array with the contents of your song's Artists
-                 * array. Assign it to jsonObject["Artist"].
-                 */
                 jsonObject["Artist"] = JsonValue.CreateStringValue(songInfo.getArtists());
                 jsonObject["trackNo"] = JsonValue.CreateNumberValue(songInfo.getTrackNo());
-
-                /*
-                 * Add the JSON object to the JSON array here.
-                 */
-
-                /*
-                 * You'll write the whole array at once so this line is unnecessary.
-                 */
-                String jsonString = jsonObject.Stringify();
-
-                /*
-                 * Your newline hackery is not necessary if you use a JSON array.
-                 */
-                String.Concat(jsonString, "\n");
-
-                /*
-                 * Again, you should write the whole array at once.
-                 */
-                //Writing to songs.json
-                await Windows.Storage.FileIO.WriteTextAsync(songsFile, jsonString);
-
+                //Adding jsonObject to the JsonArray
+                allTheSongs.Add(jsonObject);
             }
 
-            /*
-             * Write the JSON array to the file here.
-             */
+            //Writing JsonArray to songs.json
+            await Windows.Storage.FileIO.WriteTextAsync(songsFile, allTheSongs.Stringify());
 
         }
 
@@ -112,12 +93,6 @@ namespace THEMusicPlayer
                     //get song details
                     var songFile = item as StorageFile;
                     var songProperties = await songFile.Properties.GetMusicPropertiesAsync();
-
-                    /*
-                     * Why are you doing this? Just have an array of strings in your song data.
-                     */
-                    
-
                     songList_.Add(new SongData(songFile.Path, songProperties.Title, songProperties.AlbumArtist, songProperties.Album, songProperties.TrackNumber));
                 }
             }
