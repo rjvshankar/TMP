@@ -14,9 +14,13 @@ namespace THEMusicPlayer
         private List<SongData> songList_ = new List<SongData>();
 
         /*
-         * Wrap songList_ with a public read-only property called
-         * SongList.
+         * Look! This is a read-only property.
+         * You should use this instead of those ugly get methods.
          */
+        public List<SongData> SongList
+        {
+            get { return songList_; }
+        }
 
         /*
          * Where's the constructor?

@@ -9,6 +9,7 @@ using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.Media;
+using Windows.Storage;
 
 namespace THEMusicPlayer
 {
@@ -16,7 +17,7 @@ namespace THEMusicPlayer
     {
         private MediaElement mediaElement_;
         private SystemMediaTransportControls mediaControls_;
-        private List<string> nowPlayingList_ = new List<string>();
+        private List<SongData> nowPlayingList_ = new List<SongData>();
         private int currentTrackIndex_;
         private CoreDispatcher dispatcher_;
 
@@ -89,13 +90,18 @@ namespace THEMusicPlayer
             }
         }
 
+        public delegate void SongChangedEventHandler(object sender, SongData newSong);
+        public event SongChangedEventHandler SongChanged;
+
         private async void UpdateMediaSource()
         {
-            var file = await Windows.Storage.StorageFile.GetFileFromPathAsync(nowPlayingList_[currentTrackIndex_]);
+            var file = await StorageFile.GetFileFromPathAsync(
+                nowPlayingList_[currentTrackIndex_].getPath());
             var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
             mediaElement_.SetSource(stream, "audio/x-mpeg-3");
             await mediaControls_.DisplayUpdater.CopyFromFileAsync(MediaPlaybackType.Music, file);
             mediaControls_.DisplayUpdater.Update();
+            SongChanged(this, nowPlayingList_[currentTrackIndex_]);
         }
 
         public async void PlayMedia()
@@ -122,9 +128,9 @@ namespace THEMusicPlayer
                 });
         }
 
-        public void EnqueueTrack(string filePath)
+        public void EnqueueTrack(SongData song)
         {
-            nowPlayingList_.Add(filePath);
+            nowPlayingList_.Add(song);
             if (nowPlayingList_.Count == 1)
             {
                 currentTrackIndex_ = 0;
