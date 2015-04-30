@@ -15,11 +15,11 @@ namespace THEMusicPlayer
         public String path;
         public String title;
         public String album;
-        public String[] artist;
+        public String artist;
         public uint trackNo;
 
         
-        public SongData(String Path, String Title, String Album, String[] Artist, uint track)
+        public SongData(String Path, String Title, String Album, String Artist, uint track)
         {
             path = Path;
             title = Title;
@@ -48,7 +48,7 @@ namespace THEMusicPlayer
             return album;
         }
 
-        public String[] getArtists()
+        public String getArtists()
         {
             return artist;
         }

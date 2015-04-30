@@ -52,10 +52,6 @@ namespace THEMusicPlayer
                 jsonObject["Path"] = JsonValue.CreateStringValue(songInfo.getPath());
                 jsonObject["Title"] = JsonValue.CreateStringValue(songInfo.getTitle());
                 jsonObject["Album"] = JsonValue.CreateStringValue(songInfo.getAlbum());
-
-                JsonArray allTheArtists = new JsonArray();
-                allTheArtists = 
-
                 /*
                  * Populate a JSON array with the contents of your song's Artists
                  * array. Assign it to jsonObject["Artist"].
@@ -115,23 +111,14 @@ namespace THEMusicPlayer
                 {
                     //get song details
                     var songFile = item as StorageFile;
-                    TagLib.File file = TagLib.File.Create(songFile.Path);
-                    var Artists = file.Tag.AlbumArtists;
+                    var songProperties = await songFile.Properties.GetMusicPropertiesAsync();
 
                     /*
                      * Why are you doing this? Just have an array of strings in your song data.
                      */
-                    StringBuilder builder = new StringBuilder();
+                    
 
-                    foreach (var artist in Artists)
-                    {
-                        builder.Append(artist);
-                        builder.Append(", ");
-                    }
-
-                    String Artist = builder.ToString();
-
-                    songList_.Add(new SongData(songFile.Path, file.Tag.Title, Artist, file.Tag.Album, file.Tag.Track));
+                    songList_.Add(new SongData(songFile.Path, songProperties.Title, songProperties.AlbumArtist, songProperties.Album, songProperties.TrackNumber));
                 }
             }
 
