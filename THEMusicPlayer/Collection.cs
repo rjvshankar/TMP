@@ -13,30 +13,51 @@ namespace THEMusicPlayer
     {
         private List<SongData> songList_ = new List<SongData>();
 
-        /*
-         * Wrap songList_ with a public read-only property called
-         * SongList.
-         */
-
-        /*
-         * Where's the constructor?
-         * In the constructor you should populate songList_ from songs.json,
-         * or run Refresh() if it doesn't exist.
-         */
-        public Collection()
+        public List<SongData> SongList
         {
-
+            get { return songList_; }
         }
 
-        public async void retreiveSongList()
+        public static async Task<Collection> BuildCollectionAsync()
         {
-            /*
-             * Call this in the constructor. And change the name please.
-             */
-            StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
-            StorageFile songsFile = await localFolder.GetFileAsync("songs.json");
+            Collection ret = new Collection();
+            var localFolder = ApplicationData.Current.LocalFolder;
+            var item = await localFolder.TryGetItemAsync("songs.json");
 
-            var allTheSongs = await Windows.Storage.FileIO.ReadTextAsync(songsFile);
+            if (item == null)
+            {
+                await ret.Refresh();
+            }
+            else
+            {
+                ret.songList_ = await RetrieveSongList();
+            }
+
+            return ret;
+        }
+
+        private static async Task<List<SongData>> RetrieveSongList()
+        {
+            var localFolder = ApplicationData.Current.LocalFolder;
+            var songsFile = await localFolder.GetFileAsync("songs.json");
+
+            var jsonValues = JsonArray.Parse(await FileIO.ReadTextAsync(songsFile));
+
+            var ret = new List<SongData>();
+            foreach (var jsonValue in jsonValues)
+            {
+                var jsonObject = jsonValue.GetObject();
+
+                ret.Add(new SongData(
+                    jsonObject.GetNamedString("Path"),
+                    jsonObject.GetNamedString("Title"),
+                    jsonObject.GetNamedString("Album"),
+                    jsonObject.GetNamedString("Artist"),
+                    (uint)jsonObject.GetNamedNumber("TrackNumber")
+                    ));
+            }
+
+            return ret;
         }
 
         public async void Save()
@@ -44,38 +65,29 @@ namespace THEMusicPlayer
             StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
             StorageFile songsFile = await localFolder.CreateFileAsync("songs.json", CreationCollisionOption.OpenIfExists);
 
-            JsonArray allTheSongs = new JsonArray();
-            /*
-             * Add all the objects to a JSON array and write it out to the file.
-             * Look up the JsonArray class and add objects to it using its Add method.
-             */
-
-            foreach (SongData songInfo in songList_)
+            JsonArray mainArray = new JsonArray();
+            foreach (SongData songInfo in SongList)
             {
-                //Populating jsonObject with songInfo from songList_
                 JsonObject jsonObject = new JsonObject();
-                jsonObject["Path"] = JsonValue.CreateStringValue(songInfo.getPath());
-                jsonObject["Title"] = JsonValue.CreateStringValue(songInfo.getTitle());
-                jsonObject["Album"] = JsonValue.CreateStringValue(songInfo.getAlbum());
-                jsonObject["Artist"] = JsonValue.CreateStringValue(songInfo.getArtists());
-                jsonObject["trackNo"] = JsonValue.CreateNumberValue(songInfo.getTrackNo());
-                //Adding jsonObject to the JsonArray
-                allTheSongs.Add(jsonObject);
+                jsonObject["Path"] = JsonValue.CreateStringValue(songInfo.Path);
+                jsonObject["Title"] = JsonValue.CreateStringValue(songInfo.Title);
+                jsonObject["Album"] = JsonValue.CreateStringValue(songInfo.Album);
+                jsonObject["Artist"] = JsonValue.CreateStringValue(songInfo.Artist);
+                jsonObject["TrackNumber"] = JsonValue.CreateNumberValue(songInfo.TrackNumber);
+
+                mainArray.Add(jsonObject);
             }
 
-            //Writing JsonArray to songs.json
-            await Windows.Storage.FileIO.WriteTextAsync(songsFile, allTheSongs.Stringify());
-
+            await FileIO.WriteTextAsync(songsFile, mainArray.Stringify());
         }
 
-        public void Refresh()
+        public async Task Refresh()
         {
             StorageFolder rootDirectory = KnownFolders.MusicLibrary;
-            processFolder(rootDirectory);
+            await processFolder(rootDirectory);
         }
 
-        //recursive function that gets all files in the folder
-        private async void processFolder(StorageFolder folder)
+        private async Task processFolder(StorageFolder folder)
         {
             var items = await folder.GetItemsAsync();
 
@@ -85,19 +97,23 @@ namespace THEMusicPlayer
                 {
                     //recursive call to process sub-folders
                     var subFolder = item as StorageFolder;
-                    processFolder(subFolder);
+                    await processFolder(subFolder);
                 }
-
                 else
                 {
                     //get song details
                     var songFile = item as StorageFile;
-                    var songProperties = await songFile.Properties.GetMusicPropertiesAsync();
-                    songList_.Add(new SongData(songFile.Path, songProperties.Title, songProperties.AlbumArtist, songProperties.Album, songProperties.TrackNumber));
+
+                    var musicProp = await songFile.Properties.GetMusicPropertiesAsync();
+
+                    if (musicProp == null)
+                    {
+                        continue;
+                    }
+
+                    songList_.Add(new SongData(musicProp, songFile.Path));
                 }
             }
-
         }
-
     }
 }

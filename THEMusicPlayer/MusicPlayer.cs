@@ -9,6 +9,7 @@ using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.Media;
+using Windows.Storage;
 
 namespace THEMusicPlayer
 {
@@ -16,9 +17,17 @@ namespace THEMusicPlayer
     {
         private MediaElement mediaElement_;
         private SystemMediaTransportControls mediaControls_;
-        private List<string> nowPlayingList_ = new List<string>();
+        private List<SongData> nowPlayingList_ = new List<SongData>();
         private int currentTrackIndex_;
         private CoreDispatcher dispatcher_;
+
+        public List<SongData> NowPlaying
+        {
+            get
+            {
+                return nowPlayingList_;
+            }
+        }
 
         public MusicPlayer(MediaElement medElement, CoreDispatcher disp)
         {
@@ -40,6 +49,8 @@ namespace THEMusicPlayer
 
             mediaControls_.IsPlayEnabled = true;
             mediaControls_.IsPauseEnabled = true;
+            mediaControls_.IsNextEnabled = true;
+            mediaControls_.IsPreviousEnabled = true;
         }
 
         private void mediaElement__CurrentStateChanged(object sender, Windows.UI.Xaml.RoutedEventArgs e)
@@ -74,12 +85,58 @@ namespace THEMusicPlayer
                 case SystemMediaTransportControlsButton.Pause:
                     PauseMedia();
                     break;
+                case SystemMediaTransportControlsButton.Next:
+                    IncrementTrack();
+                    break;
+                case SystemMediaTransportControlsButton.Previous:
+                    DecrementTrack();
+                    break;
                 default:
                     break;
             }
-        }			
+        }
 
         private void mediaElement__MediaEnded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            IncrementTrack();
+        }
+
+        private void DecrementTrack()
+        {
+            currentTrackIndex_--;
+            if (currentTrackIndex_ >= 0)
+            {
+                UpdateMediaSource();
+                PlayMedia();
+            }
+            else
+            {
+                currentTrackIndex_ = 0;
+                UpdateMediaSource();
+                PlayMedia();
+            }
+        }
+
+        public void PlayTrack(int index)
+        {
+            if (index < 0)
+            {
+                currentTrackIndex_ = 0;
+            }
+            else if (index >= nowPlayingList_.Count)
+            {
+                currentTrackIndex_ = nowPlayingList_.Count - 1;
+            }
+            else
+            {
+                currentTrackIndex_ = index;
+            }
+
+            UpdateMediaSource();
+            PlayMedia();
+        }
+
+        private void IncrementTrack()
         {
             currentTrackIndex_++;
             if (currentTrackIndex_ < nowPlayingList_.Count)
@@ -87,53 +144,71 @@ namespace THEMusicPlayer
                 UpdateMediaSource();
                 PlayMedia();
             }
+            else
+            {
+                currentTrackIndex_ = nowPlayingList_.Count - 1;
+                UpdateMediaSource();
+                PlayMedia();
+            }
         }
+
+        public delegate void SongChangedEventHandler(object sender, SongData newSong);
+        public event SongChangedEventHandler SongChanged;
 
         private async void UpdateMediaSource()
         {
-            var file = await Windows.Storage.StorageFile.GetFileFromPathAsync(nowPlayingList_[currentTrackIndex_]);
+            StopMedia();
+            var file = await StorageFile.GetFileFromPathAsync(
+                nowPlayingList_[currentTrackIndex_].Path);
             var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
-            mediaElement_.SetSource(stream, "audio/x-mpeg-3");
+            await dispatcher_.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                mediaElement_.SetSource(stream, file.ContentType);
+            });
             await mediaControls_.DisplayUpdater.CopyFromFileAsync(MediaPlaybackType.Music, file);
             mediaControls_.DisplayUpdater.Update();
+            await dispatcher_.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                SongChanged(this, nowPlayingList_[currentTrackIndex_]);
+            });
         }
 
         public async void PlayMedia()
         {
             await dispatcher_.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                    mediaElement_.Play();
-                });
+            {
+                mediaElement_.Play();
+            });
         }
 
         public async void PauseMedia()
         {
             await dispatcher_.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                    mediaElement_.Pause();
-                });
+            {
+                mediaElement_.Pause();
+            });
         }
 
         public async void StopMedia()
         {
             await dispatcher_.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                    mediaElement_.Stop();
-                });
+            {
+                mediaElement_.Stop();
+            });
         }
 
-        public void EnqueueTrack(string filePath)
+        public delegate void PlaylistChangedEventHandler(object sender);
+        public event PlaylistChangedEventHandler PlaylistChanged;
+
+        public void EnqueueTrack(SongData song)
         {
-            nowPlayingList_.Add(filePath);
+            nowPlayingList_.Add(song);
             if (nowPlayingList_.Count == 1)
             {
                 currentTrackIndex_ = 0;
                 UpdateMediaSource();
             }
-            else
-            {
-                currentTrackIndex_++;
-            }
+            PlaylistChanged(this);
         }
 
         public void RemoveTrackAtIndex(int index)
@@ -153,6 +228,7 @@ namespace THEMusicPlayer
             {
                 nowPlayingList_.RemoveAt(index);
             }
+            PlaylistChanged(this);
         }
     }
 }

@@ -3,59 +3,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Storage.FileProperties;
 
 namespace THEMusicPlayer
 {
-    public class SongData
+    public struct SongData
     {
-        /*
-         * You need an array of strings to represent your artists.
-         */
+        public readonly string Path;
+        public readonly string Title;
+        public readonly string Album;
+        public readonly string Artist;
+        public readonly uint TrackNumber;
 
-        public String path;
-        public String title;
-        public String album;
-        public String artist;
-        public uint trackNo;
-
-        
-        public SongData(String Path, String Title, String Album, String Artist, uint track)
+        public SongData(MusicProperties props, string path)
         {
-            path = Path;
-            title = Title;
-            album = Album;
-            artist = Artist;
-            trackNo = track;
+            Path = path;
+            Title = props.Title;
+            Album = props.Album;
+            Artist = props.Artist;
+            TrackNumber = props.TrackNumber;
         }
 
-        /*
-         * Please get rid of these horrible Java-style getters and replace them with
-         * read-only properties.
-         */
-
-        public String getPath()
+        public SongData(string path, string title, string album, string artist, uint track)
         {
-            return path;
-        }
-
-        public String getTitle()
-        {
-            return title;
-        }
-
-        public String getAlbum()
-        {
-            return album;
-        }
-
-        public String getArtists()
-        {
-            return artist;
-        }
-
-        public uint getTrackNo()
-        {
-            return trackNo;
+            Path = path;
+            Title = title;
+            Album = album;
+            Artist = artist;
+            TrackNumber = track;
         }
     }
 }
