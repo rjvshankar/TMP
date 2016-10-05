@@ -21,6 +21,6 @@
             <StackPanel x:Name="collectionStackPanel" Grid.Column="1" />
         </Grid>
         
-        <MediaElement AudioCategory="BackgroundCapableMedia" Grid.Row="1" x:Name="mediaElement" />
+        <MediaElement AudioCategory="BackgroundCapableMedia" Grid.Row="1" x:Name="mediaElement" AreTransportControlsEnabled="True" />
     </Grid>
 </Page>
