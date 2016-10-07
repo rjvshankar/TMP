@@ -65,19 +65,19 @@ namespace THEMusicPlayer
         private async void musicPlayer_SongChanged(object sender, SongData newSong)
         {
             var file = await StorageFile.GetFileFromPathAsync(newSong.Path);
-            using (StorageItemThumbnail thumbnail = await file.GetThumbnailAsync(ThumbnailMode.MusicView, 200))
-            {
-                if (thumbnail != null && thumbnail.Type == ThumbnailType.Image)
-                {
-                    var bitmap = new BitmapImage();
-                    bitmap.SetSource(thumbnail);
-                    albumArtworkImage.Source = bitmap;
-                }
-                else
-                {
-                    albumArtworkImage.Source = null;
-                }
-            }
+            //using (StorageItemThumbnail thumbnail = await file.GetThumbnailAsync(ThumbnailMode.MusicView, 200))
+            //{
+            //    if (thumbnail != null && thumbnail.Type == ThumbnailType.Image)
+            //    {
+            //        var bitmap = new BitmapImage();
+            //        bitmap.SetSource(thumbnail);
+            //        albumArtworkImage.Source = bitmap;
+            //    }
+            //    else
+            //    {
+            //        albumArtworkImage.Source = null;
+            //    }
+            //}
 
             titleTextBlock.Text = newSong.Title;
             artistTextBlock.Text = newSong.Artist;

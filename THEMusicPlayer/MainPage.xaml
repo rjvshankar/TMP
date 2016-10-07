@@ -17,10 +17,26 @@
                 <ColumnDefinition Width="3*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <TextBlock x:Name="lyricsTextBlock" Grid.Column="0" />
+            <TextBlock x:Name="titleTextBlock" Grid.Column="0" Margin="339,0,342.429,750" Grid.ColumnSpan="2" RenderTransformOrigin="0.5,0.5" >
+                <TextBlock.RenderTransform>
+                    <CompositeTransform ScaleY="-1"/>
+                </TextBlock.RenderTransform>
+            </TextBlock>
+            <TextBlock x:Name="artistTextBlock" Grid.Column="0" Margin="339,19,342.429,731" Grid.ColumnSpan="2" RenderTransformOrigin="0.5,0.5" >
+                <TextBlock.RenderTransform>
+                    <CompositeTransform ScaleY="-1"/>
+                </TextBlock.RenderTransform>
+            </TextBlock>
+            <TextBlock x:Name="albumTextBlock" Grid.Column="0" Margin="339,36,342.429,714" Grid.ColumnSpan="2" RenderTransformOrigin="0.5,0.5" >
+                <TextBlock.RenderTransform>
+                    <CompositeTransform ScaleY="-1"/>
+                </TextBlock.RenderTransform>
+            </TextBlock>
+            <TextBlock x:Name="lyricsTextBlock" Grid.Column="0" Margin="339,86,342.429,0" Grid.ColumnSpan="2" />
             <StackPanel x:Name="collectionStackPanel" Grid.Column="1" />
+            <StackPanel x:Name="playlistStackPanel" Margin="10,-10,668,0" />
         </Grid>
-        
+
         <MediaElement AudioCategory="BackgroundCapableMedia" Grid.Row="1" x:Name="mediaElement" AreTransportControlsEnabled="True" />
     </Grid>
 </Page>
